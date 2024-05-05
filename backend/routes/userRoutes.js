@@ -8,6 +8,8 @@ router.post('/login', loginUser)
 router.post('/logout', logoutUser)
 router.post('/follow/:id', protectRoute , followUnFollowUser)
 router.get("/profile/:username", getUserProfile);
+router.put("/update/:id", protectRoute, updateUser);
+
 
 
 
