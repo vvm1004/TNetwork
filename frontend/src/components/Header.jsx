@@ -21,7 +21,7 @@ const Header = () => {
 				cursor={"pointer"}
 				alt='logo'
 				w={6}
-				src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
+				src={colorMode === "dark" ? "/logo_light.png" : "/logo_dark.png"}
 				onClick={toggleColorMode}
 			/>
 

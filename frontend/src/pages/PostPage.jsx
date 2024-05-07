@@ -26,7 +26,7 @@ const PostPage = () => {
 				</Flex>
 			</Flex>
 
-			<Text my={3}>Let&apos;s talk about Threads.</Text>
+			<Text my={3}>Let&apos;s talk about instagram.</Text>
 
 			<Box borderRadius={6} overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"}>
 				<Image src={"/post1.png"} w={"full"} />

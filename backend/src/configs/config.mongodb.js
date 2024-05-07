@@ -1,5 +1,6 @@
 'use strict'
-
+import dotenv from "dotenv"
+dotenv.config()
 
 //level 0
 // const config = {
@@ -22,7 +23,7 @@ const config = {
         db: {
             host: process.env.DEV_DB_HOST || 'localhost',
             port: process.env.DEV_DB_PORT || 27017,
-            name: process.env.DEV_DB_NAME || 'Threads'
+            name: process.env.DEV_DB_NAME || 'socialApp'
         }
     },
     pro: {
