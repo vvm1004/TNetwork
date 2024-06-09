@@ -18,7 +18,7 @@ dotenv.config()
 const config = {
     dev: {
         app: {
-            port: process.env.DEV_APP_PORT || 3052
+            port: process.env.DEV_APP_PORT || 5000
         },
         db: {
             host: process.env.DEV_DB_HOST || 'localhost',
@@ -28,7 +28,7 @@ const config = {
     },
     pro: {
         app: {
-            port: process.env.PRO_APP_PORT || 3000
+            port: process.env.PRO_APP_PORT || 5000
         },
         db: {
             host: process.env.PRO_DB_HOST || 'localhost',

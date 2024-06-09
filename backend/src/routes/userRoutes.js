@@ -1,5 +1,5 @@
 import express from "express"
-import { followUnFollowUser, getSuggestedUsers, getUserProfile, loginUser, logoutUser, signupUser, updateUser } from "../controllers/userController.js"
+import { followUnFollowUser, freezeAccount, getSuggestedUsers, getUserProfile, loginUser, logoutUser, signupUser, updateUser } from "../controllers/userController.js"
 import protectRoute from "../middlewares/protectRoute.js";
 const router = express.Router()
 
@@ -10,6 +10,8 @@ router.post('/follow/:id', protectRoute , followUnFollowUser)
 router.get("/profile/:query", getUserProfile);
 router.put("/update/:id", protectRoute, updateUser);
 router.get("/suggested", protectRoute, getSuggestedUsers);
+router.put("/freeze", protectRoute, freezeAccount);
+
 
 
 
