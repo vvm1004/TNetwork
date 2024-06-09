@@ -16,6 +16,8 @@ import postRoutes  from "./routes/postRoutes.js"
 import messageRoutes  from "./routes/messageRoutes.js"
 
 import {v2 as cloudinary} from 'cloudinary';
+// import job from "./cron/cron.js";
+
 const __dirname = path.resolve();
 
       
@@ -34,6 +36,8 @@ connectDB()
 // import { checkOverload } from './helpers/check.connect.js';
 // checkOverload();
 
+
+// job.start();
 
 
 // Middlewares
