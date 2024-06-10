@@ -44,7 +44,20 @@ connectDB()
 app.use(express.json({ limit: "50mb" })); // To parse JSON data in the req.body
 app.use(express.urlencoded({ extended: true })); // To parse form data in the req.body
 app.use(cookieParser());
-app.use(helmet())
+app.use(helmet({
+	contentSecurityPolicy: {
+		// useDefaults: false,
+		directives: { 
+			defaultSrc: ["'self'"], 
+			scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], 
+			//styleSrc: ["'self'", "'unsafe-inline'"], 
+			connectSrc: ["'self'", "*"],
+			"img-src": ["'self'", "data:", "res.cloudinary.com"],
+		},
+	}
+		//contentSecurityPolicy: false,
+  }));
+
 app.use(compression())
 
 

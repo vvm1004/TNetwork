@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import UserPage from "./pages/UserPage";
 import PostPage from "./pages/PostPage";
-import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/AuthPage";
 import { useRecoilValue } from "recoil";
@@ -15,7 +14,6 @@ import Layout from "./Layout";
 
 function App() {
     const user = useRecoilValue(userAtom);
-    const { pathname } = useLocation();
     return (
         <Routes>
             <Route path='/' element={user ? <Layout><HomePage /></Layout> : <Navigate to='/auth' />} />
@@ -25,7 +23,7 @@ function App() {
             <Route path='/:username/post/:pid' element={<Layout><PostPage /></Layout>} />
             <Route path='/chat' element={user ? <Layout><ChatPage /></Layout> : <Navigate to='/auth' />} />
             <Route path='/settings' element={user ? <Layout><SettingsPage /></Layout> : <Navigate to='/auth' />} />
-            <Route path='/room/:roomID' element={<RoomPage />} />
+            <Route path='/room/:roomID' element={user? <RoomPage /> :  <Navigate to='/auth' />} />
         </Routes>
     );
 }
