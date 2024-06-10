@@ -1,4 +1,4 @@
-import { Avatar, Divider, Flex, Image, Skeleton, SkeletonCircle, Text, useColorModeValue } from "@chakra-ui/react";
+import { Avatar, Divider, Flex, IconButton, Image, Skeleton, SkeletonCircle, Text, useColorModeValue } from "@chakra-ui/react";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import { useEffect, useRef, useState } from "react";
@@ -8,6 +8,8 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext.jsx";
 import messageSound from "../assets/sounds/message.mp3";
+import { FaVideo } from "react-icons/fa";
+
 
 
 const MessageContainer = () => {
@@ -26,7 +28,7 @@ const MessageContainer = () => {
 				setMessages((prev) => [...prev, message]);
 			}
 			//make a sound if the window is not focused
-			if(!document.hasFocus()){
+			if (!document.hasFocus()) {
 				const sound = new Audio(messageSound)
 				sound.play()
 			}
@@ -104,7 +106,19 @@ const MessageContainer = () => {
 
 		getMessages();
 	}, [showToast, selectedConversation.userId, selectedConversation.mock]);
-
+	function randomID(len) {
+		let result = '';
+		if (result) return result;
+		var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
+			maxPos = chars.length,
+			i;
+		len = len || 5;
+		for (i = 0; i < len; i++) {
+			result += chars.charAt(Math.floor(Math.random() * maxPos));
+		}
+		return result;
+	}
+	const roomID = randomID(5);
 	return (
 		<Flex
 			flex='70'
@@ -119,6 +133,18 @@ const MessageContainer = () => {
 				<Text display={"flex"} alignItems={"center"}>
 					{selectedConversation.username} <Image src='/verified.png' w={4} h={4} ml={1} />
 				</Text>
+				<IconButton
+					aria-label="Video Call"
+					icon={<FaVideo />}
+					size="lg"
+					ml="auto"
+					variant="ghost"
+					colorScheme="blue"
+					onClick={() => {
+						// Handle video call click
+						window.open(`/room/${roomID}`, '_blank');
+					}}
+				/>
 			</Flex>
 
 			<Divider />
