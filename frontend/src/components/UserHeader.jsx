@@ -38,7 +38,7 @@ const UserHeader = ({ user }) => {
 					<Flex gap={2} alignItems={"center"}>
 						<Text fontSize={"sm"}>{user.username}</Text>
 						<Text fontSize={"xs"} bg={"gray.dark"} color={"gray.light"} p={1} borderRadius={"full"}>
-							threads.net
+							TNetwork
 						</Text>
 					</Flex>
 				</Box>
@@ -107,7 +107,7 @@ const UserHeader = ({ user }) => {
 
 			<Flex w={"full"}>
 				<Flex flex={1} borderBottom={"1.5px solid white"} justifyContent={"center"} pb='3' cursor={"pointer"}>
-					<Text fontWeight={"bold"}> Threads</Text>
+					<Text fontWeight={"bold"}>Post</Text>
 				</Flex>
 				<Flex
 					flex={1}
