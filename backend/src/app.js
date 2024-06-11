@@ -11,9 +11,7 @@ dotenv.config()
 import connectDB from "./db/init.mongodb.js"
 
 import cookieParser from "cookie-parser"
-import userRoutes from "./routes/userRoutes.js"
-import postRoutes  from "./routes/postRoutes.js"
-import messageRoutes  from "./routes/messageRoutes.js"
+import Routes from "./routes/index.js"
 
 import {v2 as cloudinary} from 'cloudinary';
 // import job from "./cron/cron.js";
@@ -62,9 +60,8 @@ app.use(compression())
 
 
 // Routes
-app.use("/api/users", userRoutes)
-app.use("/api/posts", postRoutes);
-app.use("/api/messages", messageRoutes );
+app.use("/api", Routes)
+
 
 // http://localhost:5000 => backend,frontend
 
