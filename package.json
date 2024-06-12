@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev nodemon backend/server.js",
-    "start": "cross-env NODE_ENV=pro nodemon backend/server.js",
+    "start": "cross-env NODE_ENV=pro node backend/server.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
