@@ -57,10 +57,11 @@ const CreatePost = () => {
 	const handleCreatePost = async () => {
 		setLoading(true);
 		try {
-			const res = await fetch("/api/posts/create", {
+			const res = await fetch("/api/v1/posts/create", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					'x-client-id': user._id
 				},
 				body: JSON.stringify({ postedBy: user._id, text: postText, img: imgUrl }),
 			});

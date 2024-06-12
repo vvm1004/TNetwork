@@ -14,6 +14,7 @@ import cookieParser from "cookie-parser"
 import Routes from "./routes/index.js"
 
 import {v2 as cloudinary} from 'cloudinary';
+import morgan from "morgan";
 // import job from "./cron/cron.js";
 
 const __dirname = path.resolve();
@@ -55,12 +56,12 @@ app.use(helmet({
 	}
 		//contentSecurityPolicy: false,
   }));
-
+app.use(morgan("dev"))
 app.use(compression())
 
 
 // Routes
-app.use("/api", Routes)
+app.use("/api/v1", Routes)
 
 
 // http://localhost:5000 => backend,frontend

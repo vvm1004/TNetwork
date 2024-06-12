@@ -2,17 +2,24 @@ import { Box, Flex, Skeleton, SkeletonCircle, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import SuggestedUser from "./SuggestedUser";
 import useShowToast from "../hooks/useShowToast";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 const SuggestedUsers = () => {
 	const [loading, setLoading] = useState(true);
 	const [suggestedUsers, setSuggestedUsers] = useState([]);
 	const showToast = useShowToast();
+	const currenUser = useRecoilValue(userAtom)
 
 	useEffect(() => {
 		const getSuggestedUsers = async () => {
 			setLoading(true);
 			try {
-				const res = await fetch("/api/users/suggested");
+				const res = await fetch("/api/v1/users/suggested", {
+					headers: {
+						'x-client-id': currenUser._id
+					}
+				});
 				const data = await res.json();
 				if (data.error) {
 					showToast("Error", data.error, "error");
@@ -35,7 +42,9 @@ const SuggestedUsers = () => {
 				Suggested Users
 			</Text>
 			<Flex direction={"column"} gap={4}>
-				{!loading && suggestedUsers.map((user) => <SuggestedUser key={user._id} user={user} />)}
+				{!loading && Array.isArray(suggestedUsers) && suggestedUsers.map((user) => (
+					<SuggestedUser key={user._id} user={user} />
+				))}
 				{loading &&
 					[0, 1, 2, 3, 4].map((_, idx) => (
 						<Flex key={idx} gap={2} alignItems={"center"} p={"1"} borderRadius={"md"}>

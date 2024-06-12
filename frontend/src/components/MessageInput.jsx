@@ -20,6 +20,7 @@ import { conversationsAtom, selectedConversationAtom } from "../atoms/messagesAt
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { BsFillImageFill } from "react-icons/bs";
 import usePreviewImg from "../hooks/usePreviewImg";
+import userAtom from "../atoms/userAtom";
 
 const MessageInput = ({ setMessages }) => {
 	const [messageText, setMessageText] = useState("");
@@ -30,6 +31,7 @@ const MessageInput = ({ setMessages }) => {
 	const { onClose } = useDisclosure();
 	const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
 	const [isSending, setIsSending] = useState(false);
+	const currentUser = useRecoilValue(userAtom);
 
 	const handleSendMessage = async (e) => {
 		e.preventDefault();
@@ -39,10 +41,11 @@ const MessageInput = ({ setMessages }) => {
 		setIsSending(true);
 
 		try {
-			const res = await fetch("/api/messages", {
+			const res = await fetch("/api/v1/messages", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					'x-client-id': currentUser._id
 				},
 				body: JSON.stringify({
 					message: messageText,

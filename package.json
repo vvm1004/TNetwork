@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev nodemon backend/server.js",
-    "start": "cross-env NODE_ENV=pro node backend/server.js",
+    "start": "cross-env NODE_ENV=pro nodemon backend/server.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.2",
+    "morgan": "^1.10.0",
     "socket.io": "^4.7.5"
   },
   "devDependencies": {

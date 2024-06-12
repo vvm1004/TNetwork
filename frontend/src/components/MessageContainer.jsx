@@ -90,7 +90,11 @@ const MessageContainer = () => {
 			setMessages([]);
 			try {
 				if (selectedConversation.mock) return;
-				const res = await fetch(`/api/messages/${selectedConversation.userId}`);
+				const res = await fetch(`/api/v1/messages/${selectedConversation.userId}`, {
+					headers: {
+                        'x-client-id': currentUser._id
+                    }
+				});
 				const data = await res.json();
 				if (data.error) {
 					showToast("Error", data.error, "error");

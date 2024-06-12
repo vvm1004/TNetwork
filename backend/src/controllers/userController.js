@@ -1,9 +1,11 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
-import generateTokenAndSetCookie from "../helpers/generateTokenAndSetCookie.js";
+import generateTokenAndSetCookie from "../auth/generateTokenAndSetCookie.js";
 import { v2 as cloudinary } from 'cloudinary';
 import mongoose from "mongoose";
 import Post from "../models/postModel.js";
+import KeyTokenService from "../services/keyToken.service.js";
+import { createApiKey } from "../services/apikey.service.js";
 
 export const getUserProfile = async (req, res) => {
 	// We will fetch user profile either with username or userId
@@ -42,10 +44,18 @@ export const signupUser = async (req, res) => {
 			username,
 			password: hashedPassword
 		})
+		
 
-		await newUser.save();
 		if (newUser) {
-			generateTokenAndSetCookie(newUser._id, res)
+			await newUser.save();
+
+			const tokens = await generateTokenAndSetCookie(newUser._id, res);
+			if (!tokens) {
+				return res.status(500).json({ error: "Error generating tokens" });
+			}
+
+			const apiKey = await createApiKey(newUser._id);
+
 			res.status(201).json({
 				_id: newUser._id,
 				name: newUser.name,
@@ -53,6 +63,7 @@ export const signupUser = async (req, res) => {
 				username: newUser.username,
 				bio: newUser.bio,
 				profilePic: newUser.profilePic,
+				tokens,
 			});
 		} else {
 			res.status(400).json({ error: "Invalid user data" });
@@ -79,7 +90,10 @@ export const loginUser = async (req, res) => {
 			await user.save();
 		}
 
-		generateTokenAndSetCookie(user._id, res)
+		const tokens = await generateTokenAndSetCookie(user._id, res);
+		if (!tokens) {
+			return res.status(500).json({ error: "Error generating tokens" });
+		}
 
 		res.status(200).json({
 			_id: user._id,
@@ -88,6 +102,7 @@ export const loginUser = async (req, res) => {
 			username: user.username,
 			bio: user.bio,
 			profilePic: user.profilePic,
+			tokens
 		});
 
 	} catch (error) {
@@ -96,9 +111,11 @@ export const loginUser = async (req, res) => {
 	}
 };
 
-export const logoutUser = (req, res) => {
+export const logoutUser = async(req, res) => {
 	try {
-		res.cookie("jwt", "", { maxAge: 1 });
+		const delKey =  await KeyTokenService.removeKeyById(req.keyStore._id)
+		res.cookie("accessToken", "", { maxAge: 1 });
+		res.cookie("refreshToken", "", { maxAge: 1 });
 		res.status(200).json({ message: "User logged out successfully" })
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -224,7 +241,7 @@ export const getSuggestedUsers = async (req, res) => {
 	}
 }
 
-export const freezeAccount  = async(req, res) => {
+export const freezeAccount = async (req, res) => {
 	try {
 		const user = await User.findById(req.user._id)
 		if (!user) {

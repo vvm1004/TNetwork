@@ -36,10 +36,11 @@ const Actions = ({ post }) => {
 		if (isLiking) return;
 		setIsLiking(true);
 		try {
-			const res = await fetch("/api/posts/like/" + post._id, {
+			const res = await fetch("/api/v1/posts/like/" + post._id, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
+					'x-client-id': user._id
 				},
 			});
 			const data = await res.json();
@@ -78,10 +79,11 @@ const Actions = ({ post }) => {
 		if (isReplying) return;
 		setIsReplying(true);
 		try {
-			const res = await fetch("/api/posts/reply/" + post._id, {
+			const res = await fetch("/api/v1/posts/reply/" + post._id, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
+					'x-client-id': user._id
 				},
 				body: JSON.stringify({ text: reply }),
 			});

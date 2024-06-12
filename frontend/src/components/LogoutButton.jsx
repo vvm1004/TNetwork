@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast"
 import { FiLogOut } from "react-icons/fi";
@@ -7,13 +7,15 @@ import { FiLogOut } from "react-icons/fi";
 const LogoutButton = () => {
 	const setUser = useSetRecoilState(userAtom);
 	const showToast = useShowToast();
+	const currenUser = useRecoilValue(userAtom)
 
 	const handleLogout = async () => {
 		try {
-			const res = await fetch("/api/users/logout", {
+			const res = await fetch("/api/v1/users/logout", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					'x-client-id': currenUser._id
 				},
 			});
 			const data = await res.json();

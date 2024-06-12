@@ -18,10 +18,11 @@ const useFollowUnfollow = (user) => {
 
 		setUpdating(true);
 		try {
-			const res = await fetch(`/api/users/follow/${user._id}`, {
+			const res = await fetch(`/api/v1/users/follow/${user._id}`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					'x-client-id': currentUser._id
 				},
 			});
 			const data = await res.json();

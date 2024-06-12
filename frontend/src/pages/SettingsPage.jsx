@@ -1,18 +1,23 @@
 import { Button, Text } from "@chakra-ui/react";
 import useShowToast from "../hooks/useShowToast";
 import useLogout from "../hooks/useLogout";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 export const SettingsPage = () => {
 	const showToast = useShowToast();
 	const logout = useLogout();
-
+	const currenUser = useRecoilValue(userAtom)
 	const freezeAccount = async () => {
 		if (!window.confirm("Are you sure you want to freeze your account?")) return;
 
 		try {
-			const res = await fetch("/api/users/freeze", {
+			const res = await fetch("/api/v1/users/freeze", {
 				method: "PUT",
-				headers: { "Content-Type": "application/json" },
+				headers: { 
+					"Content-Type": "application/json",
+					'x-client-id': currenUser._id
+				 },
 			});
 			const data = await res.json();
 

@@ -2,20 +2,26 @@ import { Box, Flex, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import Post from "../components/Post";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import postsAtom from "../atoms/postsAtom";
 import SuggestedUsers from "../components/SuggestedUsers";
+import userAtom from "../atoms/userAtom";
 
 const HomePage = () => {
 	const [posts, setPosts] = useRecoilState(postsAtom);
 	const [loading, setLoading] = useState(true);
+	const currenUser = useRecoilValue(userAtom)
 	const showToast = useShowToast();
 	useEffect(() => {
 		const getFeedPosts = async () => {
 			setLoading(true);
 			setPosts([]);
 			try {
-				const res = await fetch("/api/posts/feed");
+				const res = await fetch("/api/v1/posts/feed", {
+					headers: {
+						'x-client-id': currenUser._id
+					}
+				});
 				const data = await res.json();
 				if (data.error) {
 					showToast("Error", data.error, "error");
@@ -43,7 +49,7 @@ const HomePage = () => {
 					</Flex>
 				)}
 
-				{posts.map((post) => (
+				{Array.isArray(posts) && posts.map((post) => (
 					<Post key={post._id} post={post} postedBy={post.postedBy} />
 				))}
 			</Box>
