@@ -89,7 +89,6 @@ export const loginUser = async (req, res) => {
 			user.isFrozen = false;
 			await user.save();
 		}
-
 		const tokens = await generateTokenAndSetCookie(user._id, res);
 		if (!tokens) {
 			return res.status(500).json({ error: "Error generating tokens" });
@@ -113,7 +112,8 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async(req, res) => {
 	try {
-		const delKey =  await KeyTokenService.removeKeyById(req.keyStore._id)
+		const userId = req.headers['x-client-id']
+		const delKey =  await KeyTokenService.deleteKeyByUserId(userId)
 		res.cookie("accessToken", "", { maxAge: 1 });
 		res.cookie("refreshToken", "", { maxAge: 1 });
 		res.status(200).json({ message: "User logged out successfully" })

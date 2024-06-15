@@ -10,6 +10,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { DeleteIcon } from "@chakra-ui/icons";
 import postsAtom from "../atoms/postsAtom";
+import axios from '../customize/axios'
 
 const PostPage = () => {
 	const { user, loading } = useGetUserProfile();
@@ -24,15 +25,15 @@ const PostPage = () => {
 		const getPost = async () => {
 			setPosts([]);
 			try {
-				const res = await fetch(`/api/v1/posts/${pid}`);
-				const data = await res.json();
+				const res = await axios.get(`/api/v1/posts/${pid}`);
+				const data = res.data;
 				if (data.error) {
 					showToast("Error", data.error, "error");
 					return;
 				}
 				setPosts([data]);
 			} catch (error) {
-				showToast("Error", error.message, "error");
+				showToast("Error", error.response ? error.response.data.error : error.message, "error");
 			}
 		};
 		getPost();
@@ -42,13 +43,12 @@ const PostPage = () => {
 		try {
 			if (!window.confirm("Are you sure you want to delete this post?")) return;
 
-			const res = await fetch(`/api/v1/posts/${currentPost._id}`, {
-				method: "DELETE",
+			const res = await axios.delete(`/api/v1/posts/${currentPost._id}`, {
 				headers: {
 					'x-client-id': currentUser._id
 				}
 			});
-			const data = await res.json();
+			const data = res.data;
 			if (data.error) {
 				showToast("Error", data.error, "error");
 				return;
@@ -56,10 +56,9 @@ const PostPage = () => {
 			showToast("Success", "Post deleted", "success");
 			navigate(`/${user.username}`);
 		} catch (error) {
-			showToast("Error", error.message, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		}
 	};
-
 	if (!user && loading) {
 		return (
 			<Flex justifyContent={"center"}>

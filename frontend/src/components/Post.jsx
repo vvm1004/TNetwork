@@ -10,6 +10,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import postsAtom from "../atoms/postsAtom";
+import axios from '../customize/axios'
 
 
 const Post = ({ post, postedBy }) => {
@@ -23,15 +24,15 @@ const Post = ({ post, postedBy }) => {
 	useEffect(() => {
 		const getUser = async () => {
 			try {
-				const res = await fetch("/api/v1/users/profile/" + postedBy);
-				const data = await res.json();
+				const res = await axios.get(`/api/v1/users/profile/${postedBy}`);
+				const data = res.data;
 				if (data.error) {
 					showToast("Error", data.error, "error");
 					return;
 				}
 				setUser(data);
 			} catch (error) {
-				showToast("Error", error.message, "error");
+				showToast("Error", error.response ? error.response.data.error : error.message, "error");
 				setUser(null);
 			}
 		};
@@ -44,23 +45,23 @@ const Post = ({ post, postedBy }) => {
 			e.preventDefault();
 			if (!window.confirm("Are you sure you want to delete this post?")) return;
 
-			const res = await fetch(`/api/v1/posts/${post._id}`, {
-				method: "DELETE",
+			const res = await axios.delete(`/api/v1/posts/${post._id}`, {
 				headers: {
 					'x-client-id': currentUser._id
 				}
 			});
-			const data = await res.json();
+			const data = res.data;
 			if (data.error) {
 				showToast("Error", data.error, "error");
 				return;
 			}
 			showToast("Success", "Post deleted", "success");
-            setPosts(posts.filter((p) => p._id !== post._id));
+			setPosts(posts.filter((p) => p._id !== post._id));
 		} catch (error) {
-			showToast("Error", error.message, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		}
 	};
+
 
 	if (!user) return null;
 	return (

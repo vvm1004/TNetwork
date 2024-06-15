@@ -21,6 +21,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { BsFillImageFill } from "react-icons/bs";
 import usePreviewImg from "../hooks/usePreviewImg";
 import userAtom from "../atoms/userAtom";
+import axios from '../customize/axios'
 
 const MessageInput = ({ setMessages }) => {
 	const [messageText, setMessageText] = useState("");
@@ -41,19 +42,18 @@ const MessageInput = ({ setMessages }) => {
 		setIsSending(true);
 
 		try {
-			const res = await fetch("/api/v1/messages", {
-				method: "POST",
+			const res = await axios.post("/api/v1/messages", {
+				message: messageText,
+				recipientId: selectedConversation.userId,
+				img: imgUrl,
+			}, {
 				headers: {
 					"Content-Type": "application/json",
 					'x-client-id': currentUser._id
 				},
-				body: JSON.stringify({
-					message: messageText,
-					recipientId: selectedConversation.userId,
-					img: imgUrl,
-				}),
 			});
-			const data = await res.json();
+
+			const data = res.data;
 			if (data.error) {
 				showToast("Error", data.error, "error");
 				return;
@@ -79,11 +79,12 @@ const MessageInput = ({ setMessages }) => {
 			setMessageText("");
 			setImgUrl("");
 		} catch (error) {
-			showToast("Error", error.message, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		} finally {
 			setIsSending(false);
 		}
 	};
+
 	return (
 		<Flex gap={2} alignItems={"center"}>
 			<form onSubmit={handleSendMessage} style={{ flex: 95 }}>

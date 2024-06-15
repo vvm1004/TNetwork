@@ -6,23 +6,24 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import postsAtom from "../atoms/postsAtom";
 import SuggestedUsers from "../components/SuggestedUsers";
 import userAtom from "../atoms/userAtom";
+import axios from '../customize/axios'
 
 const HomePage = () => {
 	const [posts, setPosts] = useRecoilState(postsAtom);
 	const [loading, setLoading] = useState(true);
-	const currenUser = useRecoilValue(userAtom)
+	const currentUser = useRecoilValue(userAtom)
 	const showToast = useShowToast();
 	useEffect(() => {
 		const getFeedPosts = async () => {
 			setLoading(true);
 			setPosts([]);
 			try {
-				const res = await fetch("/api/v1/posts/feed", {
+				const res = await axios.get("/api/v1/posts/feed", {
 					headers: {
-						'x-client-id': currenUser._id
+						'x-client-id': currentUser._id
 					}
 				});
-				const data = await res.json();
+				const data = res.data;
 				if (data.error) {
 					showToast("Error", data.error, "error");
 					return;
@@ -30,14 +31,13 @@ const HomePage = () => {
 				console.log(data);
 				setPosts(data);
 			} catch (error) {
-				showToast("Error", error.message, "error");
+				showToast("Error", error.response ? error.response.data.error : error.message, "error");
 			} finally {
 				setLoading(false);
 			}
 		};
 		getFeedPosts();
 	}, [showToast, setPosts]);
-
 	return (
 		<Flex gap='10' alignItems={"flex-start"}>
 			<Box flex={70}>

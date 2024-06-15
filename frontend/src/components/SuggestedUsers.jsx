@@ -4,37 +4,38 @@ import SuggestedUser from "./SuggestedUser";
 import useShowToast from "../hooks/useShowToast";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
+import axios from '../customize/axios'
 
 const SuggestedUsers = () => {
 	const [loading, setLoading] = useState(true);
 	const [suggestedUsers, setSuggestedUsers] = useState([]);
 	const showToast = useShowToast();
-	const currenUser = useRecoilValue(userAtom)
-
+	const currentUser = useRecoilValue(userAtom)
+	
 	useEffect(() => {
 		const getSuggestedUsers = async () => {
-			setLoading(true);
-			try {
-				const res = await fetch("/api/v1/users/suggested", {
-					headers: {
-						'x-client-id': currenUser._id
-					}
-				});
-				const data = await res.json();
-				if (data.error) {
-					showToast("Error", data.error, "error");
-					return;
-				}
-				setSuggestedUsers(data);
-			} catch (error) {
-				showToast("Error", error.message, "error");
-			} finally {
-				setLoading(false);
+		  setLoading(true);
+		  try {
+			const response = await axios.get("/api/v1/users/suggested", {
+			  headers: {
+				"x-client-id": currentUser._id,
+			  },
+			});
+			const data = response.data;
+			if (data.error) {
+			  showToast("Error", data.error, "error");
+			  return;
 			}
+			setSuggestedUsers(data);
+		  } catch (error) {
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
+		  } finally {
+			setLoading(false);
+		  }
 		};
-
+	
 		getSuggestedUsers();
-	}, [showToast]);
+	  }, [showToast]);
 
 	return (
 		<>

@@ -9,6 +9,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { conversationsAtom, selectedConversationAtom } from "../atoms/messagesAtom";
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext";
+import axios from '../customize/axios'
 
 const ChatPage = () => {
 	const [searchingUser, setSearchingUser] = useState(false);
@@ -42,12 +43,12 @@ const ChatPage = () => {
 	useEffect(() => {
 		const getConversations = async () => {
 			try {
-				const res = await fetch("/api/v1/messages/conversations",{
+				const res = await axios.get("/api/v1/messages/conversations", {
 					headers: {
-                        'x-client-id': currentUser._id
-                    }
+						'x-client-id': currentUser._id
+					}
 				});
-				const data = await res.json();
+				const data = res.data;
 				if (data.error) {
 					showToast("Error", data.error, "error");
 					return;
@@ -55,7 +56,7 @@ const ChatPage = () => {
 				console.log(data);
 				setConversations(data);
 			} catch (error) {
-				showToast("Error", error.message, "error");
+				showToast("Error", error.response ? error.response.data.error : error.message, "error");
 			} finally {
 				setLoadingConversations(false);
 			}
@@ -68,8 +69,8 @@ const ChatPage = () => {
 		e.preventDefault();
 		setSearchingUser(true);
 		try {
-			const res = await fetch(`/api/v1/users/profile/${searchText}`);
-			const searchedUser = await res.json();
+			const res = await axios.get(`/api/v1/users/profile/${searchText}`);
+			const searchedUser = res.data;
 			if (searchedUser.error) {
 				showToast("Error", searchedUser.error, "error");
 				return;
@@ -112,11 +113,12 @@ const ChatPage = () => {
 			};
 			setConversations((prevConvs) => [...prevConvs, mockConversation]);
 		} catch (error) {
-			showToast("Error", error.message, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		} finally {
 			setSearchingUser(false);
 		}
 	};
+
 
 	return (
 		<Box

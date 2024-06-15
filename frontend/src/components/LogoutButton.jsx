@@ -1,24 +1,24 @@
 import { Button } from "@chakra-ui/button";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
-import useShowToast from "../hooks/useShowToast"
+import useShowToast from "../hooks/useShowToast";
 import { FiLogOut } from "react-icons/fi";
+import axios from '../customize/axios'
 
 const LogoutButton = () => {
 	const setUser = useSetRecoilState(userAtom);
 	const showToast = useShowToast();
-	const currenUser = useRecoilValue(userAtom)
+	const currentUser = useRecoilValue(userAtom);
 
 	const handleLogout = async () => {
 		try {
-			const res = await fetch("/api/v1/users/logout", {
-				method: "POST",
+			const res = await axios.post("/api/v1/users/logout", {}, {
 				headers: {
 					"Content-Type": "application/json",
-					'x-client-id': currenUser._id
+					"x-client-id": currentUser._id,
 				},
 			});
-			const data = await res.json();
+			const data = res.data;
 
 			if (data.error) {
 				showToast("Error", data.error, "error");
@@ -28,9 +28,10 @@ const LogoutButton = () => {
 			localStorage.removeItem("user");
 			setUser(null);
 		} catch (error) {
-			showToast("Error", error, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		}
 	};
+
 	return (
 		<Button position={"fixed"} top={"30px"} right={"30px"} size={"sm"} onClick={handleLogout}>
 			<FiLogOut size={20} />

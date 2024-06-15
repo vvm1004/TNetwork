@@ -7,6 +7,8 @@ import Post from "../components/Post";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import { useRecoilState } from "recoil";
 import postsAtom from "../atoms/postsAtom";
+import axios from "../customize/axios";
+
 
 const UserPage = () => {
 	const { user, loading } = useGetUserProfile();
@@ -20,12 +22,12 @@ const UserPage = () => {
 			if (!user) return;
 			setFetchingPosts(true);
 			try {
-				const res = await fetch(`/api/v1/posts/user/${username}`);
-				const data = await res.json();
+				const res = await axios.get(`/api/v1/posts/user/${username}`);
+				const data = res.data;
 				console.log(data);
 				setPosts(data);
 			} catch (error) {
-				showToast("Error", error.message, "error");
+				showToast("Error", error.response ? error.response.data.error : error.message, "error");
 				setPosts([]);
 			} finally {
 				setFetchingPosts(false);
@@ -34,7 +36,6 @@ const UserPage = () => {
 
 		getPosts();
 	}, [username, showToast, setPosts, user]);
-
 	if (!user && loading) {
 		return (
 			<Flex justifyContent={"center"}>
@@ -56,7 +57,8 @@ const UserPage = () => {
 				</Flex>
 			)}
 
-			{posts.map((post) => (
+
+			{Array.isArray(posts) && posts.map((post) => (
 				<Post key={post._id} post={post} postedBy={post.postedBy} />
 			))}
 		</>

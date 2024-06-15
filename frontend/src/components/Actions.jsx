@@ -19,6 +19,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
+import axios from '../customize/axios'
 
 const Actions = ({ post }) => {
 	const user = useRecoilValue(userAtom);
@@ -36,14 +37,13 @@ const Actions = ({ post }) => {
 		if (isLiking) return;
 		setIsLiking(true);
 		try {
-			const res = await fetch("/api/v1/posts/like/" + post._id, {
-				method: "PUT",
+			const res = await axios.put("/api/v1/posts/like/" + post._id, {}, {
 				headers: {
 					"Content-Type": "application/json",
 					'x-client-id': user._id
-				},
+				}
 			});
-			const data = await res.json();
+			const data = res.data;
 			if (data.error) return showToast("Error", data.error, "error");
 
 			if (!liked) {
@@ -68,7 +68,7 @@ const Actions = ({ post }) => {
 
 			setLiked(!liked);
 		} catch (error) {
-			showToast("Error", error.message, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		} finally {
 			setIsLiking(false);
 		}
@@ -79,15 +79,13 @@ const Actions = ({ post }) => {
 		if (isReplying) return;
 		setIsReplying(true);
 		try {
-			const res = await fetch("/api/v1/posts/reply/" + post._id, {
-				method: "PUT",
+			const res = await axios.put("/api/v1/posts/reply/" + post._id, { text: reply }, {
 				headers: {
 					"Content-Type": "application/json",
 					'x-client-id': user._id
-				},
-				body: JSON.stringify({ text: reply }),
+				}
 			});
-			const data = await res.json();
+			const data = res.data;
 			if (data.error) return showToast("Error", data.error, "error");
 
 			const updatedPosts = posts.map((p) => {
@@ -101,11 +99,12 @@ const Actions = ({ post }) => {
 			onClose();
 			setReply("");
 		} catch (error) {
-			showToast("Error", error.message, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		} finally {
 			setIsReplying(false);
 		}
 	};
+
 
 	return (
 		<Flex flexDirection='column'>

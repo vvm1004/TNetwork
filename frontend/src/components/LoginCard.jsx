@@ -19,6 +19,7 @@ import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
 import useShowToast from "../hooks/useShowToast";
 import userAtom from "../atoms/userAtom";
+import axios from '../customize/axios'
 
 export default function LoginCard() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -34,27 +35,27 @@ export default function LoginCard() {
 	const handleLogin = async () => {
 		setLoading(true);
 		try {
-			const res = await fetch("/api/v1/users/login", {
-				method: "POST",
+			const res = await axios.post("/api/v1/users/login", inputs, {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(inputs),
 			});
-			const data = await res.json();
+			const data = res.data;
 			if (data.error) {
 				showToast("Error", data.error, "error");
 				return;
 			}
+			
 			console.log(data);
 			localStorage.setItem("user", JSON.stringify(data));
 			setUser(data);
 		} catch (error) {
-			showToast("Error", error, "error");
-		}finally {
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
+		} finally {
 			setLoading(false);
 		}
 	};
+
 	return (
 		<Flex align={"center"} justify={"center"}>
 			<Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>

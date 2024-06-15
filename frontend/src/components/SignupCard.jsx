@@ -21,6 +21,7 @@ import { useSetRecoilState } from 'recoil';
 import authScreenAtom from '../atoms/authAtom';
 import useShowToast from '../hooks/useShowToast';
 import userAtom from '../atoms/userAtom';
+import axios from '../customize/axios'
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,25 +38,19 @@ export default function SignupCard() {
 
   const handleSignup = async () => {
     try {
-      const res = await fetch("/api/v1/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(inputs),
-      });
-      const data = await res.json();
-
+      const response = await axios.post("/api/v1/users/signup", inputs);
+  
+      const data = response.data;
+  
       if (data.error) {
-        showToast("Error", error, "error");
+        showToast("Error", data.error, "error");
         return;
       }
-
+  
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
     } catch (error) {
-      showToast("Error", error, "error");
-      // console.log(error);
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
     }
   };
 

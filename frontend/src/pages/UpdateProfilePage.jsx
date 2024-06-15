@@ -15,7 +15,7 @@ import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
-
+import axios from '../customize/axios'
 export default function UpdateProfilePage() {
 	const [user, setUser] = useRecoilState(userAtom);
 	const [inputs, setInputs] = useState({
@@ -37,15 +37,16 @@ export default function UpdateProfilePage() {
 		setUpdating(true);
 
 		try {
-			const res = await fetch(`/api/v1/users/update/${user._id}`, {
-				method: "PUT",
+			const res = await axios.put(`/api/v1/users/update/${user._id}`, {
+				...inputs,
+				profilePic: imgUrl,
+			}, {
 				headers: {
 					"Content-Type": "application/json",
 					'x-client-id': user._id
 				},
-				body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
 			});
-			const data = await res.json(); // updated user object
+			const data = res.data; // updated user object
 			if (data.error) {
 				showToast("Error", data.error, "error");
 				return;
@@ -54,8 +55,8 @@ export default function UpdateProfilePage() {
 			setUser(data);
 			localStorage.setItem("user", JSON.stringify(data));
 		} catch (error) {
-			showToast("Error", error, "error");
-		}finally {
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
+		} finally {
 			setUpdating(false);
 		}
 	};

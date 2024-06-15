@@ -136,12 +136,10 @@ export const replyToPost = async (req, res) => {
 export const getFeedPosts = async (req, res) => {
 	try {
 		const userId = req.user._id;
-		console.log(userId)
 		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
-		console.log(user)
 		const following = user.following;
 
 		const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({ createdAt: -1 });

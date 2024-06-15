@@ -26,6 +26,7 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useParams } from "react-router-dom";
+import axios from '../customize/axios'
 
 const MAX_CHAR = 500;
 
@@ -57,16 +58,18 @@ const CreatePost = () => {
 	const handleCreatePost = async () => {
 		setLoading(true);
 		try {
-			const res = await fetch("/api/v1/posts/create", {
-				method: "POST",
+			const res = await axios.post("/api/v1/posts/create", {
+				postedBy: user._id,
+				text: postText,
+				img: imgUrl
+			}, {
 				headers: {
 					"Content-Type": "application/json",
 					'x-client-id': user._id
-				},
-				body: JSON.stringify({ postedBy: user._id, text: postText, img: imgUrl }),
+				}
 			});
 
-			const data = await res.json();
+			const data = res.data;
 			if (data.error) {
 				showToast("Error", data.error, "error");
 				return;
@@ -79,7 +82,7 @@ const CreatePost = () => {
 			setPostText("");
 			setImgUrl("");
 		} catch (error) {
-			showToast("Error", error, "error");
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
 		} finally {
 			setLoading(false);
 		}

@@ -9,6 +9,7 @@ import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext.jsx";
 import messageSound from "../assets/sounds/message.mp3";
 import { FaVideo } from "react-icons/fa";
+import axios from '../customize/axios'
 
 
 
@@ -90,19 +91,19 @@ const MessageContainer = () => {
 			setMessages([]);
 			try {
 				if (selectedConversation.mock) return;
-				const res = await fetch(`/api/v1/messages/${selectedConversation.userId}`, {
+				const res = await axios.get(`/api/v1/messages/${selectedConversation.userId}`, {
 					headers: {
-                        'x-client-id': currentUser._id
-                    }
+						"x-client-id": currentUser._id,
+					},
 				});
-				const data = await res.json();
+				const data = res.data;
 				if (data.error) {
 					showToast("Error", data.error, "error");
 					return;
 				}
 				setMessages(data);
 			} catch (error) {
-				showToast("Error", error.message, "error");
+				showToast("Error", error.response ? error.response.data.error : error.message, "error");
 			} finally {
 				setLoadingMessages(false);
 			}
@@ -110,6 +111,7 @@ const MessageContainer = () => {
 
 		getMessages();
 	}, [showToast, selectedConversation.userId, selectedConversation.mock]);
+
 	function randomID(len) {
 		let result = '';
 		if (result) return result;

@@ -2,6 +2,7 @@ import { useState } from "react";
 import useShowToast from "./useShowToast";
 import userAtom from "../atoms/userAtom";
 import { useRecoilValue } from "recoil";
+import axios from '../customize/axios'
 
 const useFollowUnfollow = (user) => {
 	const currentUser = useRecoilValue(userAtom);
@@ -10,43 +11,40 @@ const useFollowUnfollow = (user) => {
 	const showToast = useShowToast();
 
 	const handleFollowUnfollow = async () => {
-		if (!currentUser) {
-			showToast("Error", "Please login to follow", "error");
-			return;
-		}
-		if (updating) return;
+        if (!currentUser) {
+            showToast("Error", "Please login to follow", "error");
+            return;
+        }
+        if (updating) return;
 
-		setUpdating(true);
-		try {
-			const res = await fetch(`/api/v1/users/follow/${user._id}`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					'x-client-id': currentUser._id
-				},
-			});
-			const data = await res.json();
-			if (data.error) {
-				showToast("Error", data.error, "error");
-				return;
-			}
+        setUpdating(true);
+        try {
+            const res = await axios.post(`/api/v1/users/follow/${user._id}`, {}, {
+                headers: {
+                    "Content-Type": "application/json",
+                    'x-client-id': currentUser._id
+                },
+            });
+            const data = res.data;
+            if (data.error) {
+                showToast("Error", data.error, "error");
+                return;
+            }
 
-			if (following) {
-				showToast("Success", `Unfollowed ${user.name}`, "success");
-				user.followers.pop(); // simulate removing from followers
-			} else {
-				showToast("Success", `Followed ${user.name}`, "success");
-				user.followers.push(currentUser?._id); // simulate adding to followers
-			}
-			setFollowing(!following);
+            const updatedFollowing = !following;
+            setFollowing(updatedFollowing);
 
-			console.log(data);
-		} catch (error) {
-			showToast("Error", error, "error");
-		} finally {
-			setUpdating(false);
-		}
-	};
+            if (updatedFollowing) {
+                showToast("Success", `Followed ${user.name}`, "success");
+            } else {
+                showToast("Success", `Unfollowed ${user.name}`, "success");
+            }
+        } catch (error) {
+			showToast("Error", error.response ? error.response.data.error : error.message, "error");
+        } finally {
+            setUpdating(false);
+        }
+    };
 
 	return { handleFollowUnfollow, updating, following };
 };
