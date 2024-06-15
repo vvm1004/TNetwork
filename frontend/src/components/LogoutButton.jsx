@@ -26,6 +26,9 @@ const LogoutButton = () => {
 			}
 
 			localStorage.removeItem("user");
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
+
 			setUser(null);
 		} catch (error) {
 			showToast("Error", error.response ? error.response.data.error : error.message, "error");

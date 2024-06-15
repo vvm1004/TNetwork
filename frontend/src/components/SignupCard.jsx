@@ -48,6 +48,9 @@ export default function SignupCard() {
       }
   
       localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("accessToken", JSON.stringify(data.tokens.accessToken));
+			localStorage.setItem("refreshToken", JSON.stringify(data.tokens.refreshToken));
+
       setUser(data);
     } catch (error) {
 			showToast("Error", error.response ? error.response.data.error : error.message, "error");

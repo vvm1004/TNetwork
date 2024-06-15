@@ -202,7 +202,7 @@ export const updateUser = async (req, res) => {
 			},
 			{ arrayFilters: [{ "reply.userId": userId }] }
 		)
-
+        
 		// password should be null in response
 		user.password = null;
 

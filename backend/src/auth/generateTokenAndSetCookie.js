@@ -22,8 +22,8 @@
             //accessToken
             const accessToken = jwt.sign({ userId }, privateKey, {
                 algorithm: "RS256",
-                expiresIn: '2 days'
-                // expiresIn:'30s'
+                // expiresIn: '2 days'
+                expiresIn:'10s'
 
 
             });
@@ -48,8 +48,8 @@
             // Set accessToken cookie
             res.cookie('accessToken', accessToken, {
                 httpOnly: true, //more secure
-                maxAge: 2 * 24 * 60 * 60 * 1000,
-                // maxAge: 30*1000,
+                // maxAge: 2 * 24 * 60 * 60 * 1000,
+                maxAge: 10*1000,
                 sameSite: "strict" //CSRF 
             }); // 2 days
 

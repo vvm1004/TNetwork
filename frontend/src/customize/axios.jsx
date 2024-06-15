@@ -7,6 +7,14 @@ const getCurrentUser = () => {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
 };
+const getAccessToken = () => {
+    const accessToken = localStorage.getItem('accessToken');
+    return accessToken ? JSON.parse(accessToken) : null;
+};
+const getRefreshToken = () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    return refreshToken ? JSON.parse(refreshToken) : null;
+};
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
     // Do something before request is sent
@@ -17,7 +25,7 @@ instance.interceptors.request.use(function (config) {
     ) {
         return config;
     }
-    const accessToken = getCurrentUser().tokens.accessToken;
+    const accessToken = getAccessToken();
     config.headers['x-accesstoken'] = accessToken;
     return config;
 
@@ -46,21 +54,25 @@ instance.interceptors.response.use(async function (response) {
                 isRefreshing = true;
                 try {
                     const currentUser = getCurrentUser();
-
+                    const refreshToken = getRefreshToken()
 
                     const refreshTokenResponse = await axios.post('/api/v1/handleRefreshToken', null, {
                         headers: {
                             "x-client-id": currentUser?._id,
-                            "x-rtoken-id": currentUser.tokens.refreshToken,
+                            "x-rtoken-id": refreshToken,
                         },
                     });
 
                     const newUser = refreshTokenResponse.data;
+                    const newAccesstoken = refreshTokenResponse.data.tokens.accessToken;
+                    const newRefreshToken = refreshTokenResponse.data.tokens.refreshToken;
 
                     console.log("New user    ", newUser)
                     localStorage.setItem('user', JSON.stringify(newUser));
+                    localStorage.setItem('accessToken', JSON.stringify(newAccesstoken));
+                    localStorage.setItem('refreshToken', JSON.stringify(newRefreshToken));
 
-                    config.headers['x-accesstoken'] = newUser.tokens.accessToken;
+                    config.headers['x-accesstoken'] = newAccesstoken;
 
                     // Thiết lập lại isRefreshing sau khi refresh token thành công
                     isRefreshing = false;
