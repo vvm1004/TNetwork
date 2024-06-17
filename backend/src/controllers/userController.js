@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import Post from "../models/postModel.js";
 import KeyTokenService from "../services/keyToken.service.js";
 import { createApiKey } from "../services/apikey.service.js";
+import Notification from "../models/notificationModel.js";
+import { notifyUser } from "../socket/socket.js";
 
 export const getUserProfile = async (req, res) => {
 	// We will fetch user profile either with username or userId
@@ -145,6 +147,17 @@ export const followUnFollowUser = async (req, res) => {
 			// Follow user
 			await User.findByIdAndUpdate(req.user._id, { $push: { following: id } })
 			await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } })
+			// Send notification to the user
+			const newNotification = new Notification({
+				type: "follow",
+				from: req.user._id,
+				to: userToModify._id,
+			});
+
+			await newNotification.save();
+
+			notifyUser(userToModify._id, newNotification);
+
 			res.status(200).json({ message: "User followed successfully" });
 
 		}

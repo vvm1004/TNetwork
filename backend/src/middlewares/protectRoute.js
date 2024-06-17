@@ -30,8 +30,8 @@ const protectRoute = async (req, res, next) => {
         const user = await User.findById(decoded.userId).select("-password")
 
         req.user = user;
-        req.userId = decoded.userId
-        req.keyStore = keyStore
+        // req.userId = decoded.userId
+        // req.keyStore = keyStore
 
         
         next();

@@ -11,6 +11,7 @@ import ChatPage from "./pages/ChatPage";
 import RoomPage from "./pages/RoomPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import Layout from "./Layout";
+import Notification from "./pages/NotificationPage";
 
 function App() {
     const user = useRecoilValue(userAtom);
@@ -24,6 +25,8 @@ function App() {
             <Route path='/chat' element={user ? <Layout><ChatPage /></Layout> : <Navigate to='/auth' />} />
             <Route path='/settings' element={user ? <Layout><SettingsPage /></Layout> : <Navigate to='/auth' />} />
             <Route path='/room/:roomID' element={user? <RoomPage /> :  <Navigate to='/auth' />} />
+            <Route path='/notifications' element={user ? <Layout><Notification /></Layout> : <Navigate to='/auth' />} />
+
         </Routes>
     );
 }

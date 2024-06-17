@@ -43,4 +43,13 @@ io.on("connection", (socket) => {
 	})
 });
 
+export const notifyUser = (userId, notification) => {
+	const socketId = userSocketMap[userId];
+	if(socketId){
+		io.to(socketId).emit("newNotification", notification)
+		io.to(socketId).emit("newNotification2", notification)
+
+	}
+}
+
 export { io, server };
